@@ -1,0 +1,424 @@
+<!doctype html>
+<html class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Understanding the Self </title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@0;1&amp;family=Poppins:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+html, body { height: 100%; margin: 0; padding: 0; }
+* { box-sizing: border-box; }
+
+/* ✨ KEPT ANIMATIONS */
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 30px rgba(120, 100, 80, 0.15); } 50% { box-shadow: 0 0 50px rgba(120, 100, 80, 0.25); } }
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+
+/* 🌿 NEW AESTHETIC BASE */
+body {
+  background: #e9d9c4 url("https://www.transparenttextures.com/patterns/old-mathematics.png");
+  background-blend-mode: multiply;
+  font-family: 'Poppins', sans-serif;
+  color: #2f2a25;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+  opacity: 0.22;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(120, 90, 70, 0.10), transparent 45%),
+    radial-gradient(circle at 80% 70%, rgba(90, 70, 50, 0.08), transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.prose-serif { font-family: 'Crimson Text', serif; }
+
+.container-blog {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-section {
+  text-align: center;
+  margin-bottom: 80px;
+  animation: fadeInUp 1s ease-out;
+  position: relative;
+}
+
+.hero-title {
+  font-family: 'Crimson Text', serif;
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  font-weight: 700;
+  color: #3a2f2a;
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
+}
+
+.hero-subtitle {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.5rem;
+  font-style: italic;
+  color: #6b5b52;
+  margin-bottom: 20px;
+}
+
+.hero-byline {
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #7a6a5f;
+  animation: slideInRight 1.2s ease-out;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 40px;
+  margin-bottom: 40px;
+  border: 1px solid rgba(120, 100, 80, 0.18);
+  box-shadow: 0 10px 25px rgba(40, 30, 20, 0.08);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: fadeInUp 0.8s ease-out;
+  position: relative;
+}
+
+.section-header {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #3a2f2a;
+  margin-bottom: 26px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.section-number {
+  width: 46px;
+  height: 46px;
+  background: #6b5b52;
+  color: #fff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  animation: float 3s ease-in-out infinite;
+}
+
+.prose { line-height: 1.9; color: #3d332d; font-size: 1.05rem; }
+
+.callout {
+  background: rgba(107, 91, 82, 0.08);
+  border-left: 4px solid #6b5b52;
+  border-radius: 12px;
+  padding: 22px;
+  margin: 26px 0;
+  font-style: italic;
+}
+
+.toc-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.62);
+  border-radius: 12px;
+  border-left: 3px solid #6b5b52;
+  transition: all 0.4s ease;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.toc-item:hover { transform: translateX(8px); }
+
+/* 🚀 POPUP (MODAL) STYLES */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(40, 30, 20, 0.6);
+  backdrop-filter: blur(8px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.modal-content {
+  background: #f9f4ee url("https://www.transparenttextures.com/patterns/old-mathematics.png");
+  max-width: 700px;
+  width: 100%;
+  max-height: 85vh;
+  border-radius: 20px;
+  padding: 40px;
+  position: relative;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+  overflow-y: auto;
+  border: 1px solid rgba(120, 100, 80, 0.2);
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.close-modal-btn {
+  position: sticky;
+  top: 0;
+  float: right;
+  background: #6b5b52;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 20px;
+  transition: 0.3s;
+}
+
+.close-modal-btn:hover { background: #3a2f2a; transform: scale(1.05); }
+
+/* TRIGGER BUTTONS (Replacing Dropdown feel) */
+.popup-trigger {
+  width: 100%;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(120, 100, 80, 0.1);
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #3a2f2a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.3s ease;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.popup-trigger:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateX(10px);
+  color: #6b5b52;
+}
+
+.footer { text-align: center; padding: 50px 0; color: #7a6a5f; border-top: 1px solid rgba(120, 100, 80, 0.2); margin-top: 80px; }
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-thumb { background: #6b5b52; border-radius: 5px; }
+
+</style>
+</head>
+<body class="h-full overflow-auto">
+  <div class="container-blog">
+    <!-- I. Front Page -->
+    <section id="front-page" class="hero-section">
+      <h1 id="portfolio-title" class="hero-title"> Becoming me</h1>
+      <p id="subtitle" class="hero-subtitle">A Journey of Self-Discovery</p>
+      <p class="hero-byline">by <span id="author-name">Rica Loraine B. Tuvillara</span></p>
+    </section>
+
+    <!-- II. Table of Contents -->
+    <section id="toc" class="card">
+      <div class="section-header">
+        <div class="section-number">II</div><span>Table of Contents</span>
+      </div>
+      <div class="toc-grid">
+        <div class="toc-item" onclick="scrollToSection('front-page')"><span>I. Front Page</span> <span class="toc-page">1</span></div>
+        <div class="toc-item" onclick="scrollToSection('toc')"><span>II. Table of Contents</span> <span class="toc-page">2</span></div>
+        <div class="toc-item" onclick="scrollToSection('essay-intro')"><span>III. Essay: Introduction</span> <span class="toc-page">3</span></div>
+        <div class="toc-item" onclick="scrollToSection('smart-goal')"><span>IV. SMART Goal Reflection</span> <span class="toc-page">4</span></div>
+        <div class="toc-item" onclick="scrollToSection('submissions')"><span>V. Submissions</span> <span class="toc-page">5</span></div>
+        <div class="toc-item" onclick="scrollToSection('parting-words')"><span>VI. Parting Words</span> <span class="toc-page">6</span></div>
+      </div>
+    </section>
+
+    <!-- III. Essay -->
+    <section id="essay-intro" class="card">
+      <div class="section-header"><div class="section-number">III</div><span>Essay: Introduction</span></div>
+      <div class="prose">
+        <p style="color: #8a7668; margin-bottom: 24px;">Understanding the Self is not a destination but a journey, one that challenges us to look deeper into who we truly are beyond the surface.</p>
+        <div class="callout">“Becoming me” represents my journey throughout Understanding the Self. I realized during the semester I had with this subject that discovering who I am is not something that happens instantly, and it’s a continuous process of learning, growing, trials and errors, and improving myself day by day. Every lesson helped open new perspectives on how I’d see my identity, from my personality and beliefs to the way my environment and experiences shape me as a person. The word “becoming” symbolizes my growth and change. This shows how we as humans continue to grow, and this contributes to who we become. The “me,” on the other hand, represents my self-awareness and individuality, even if there were many factors that would influence us, in the end, we have the power to define ourselves and choose the kind of person we will be. 
+
+This final requirement is more than just a compilation of my activities, but a reflection of my journey of diving deeper into my understanding of myself. It shows my realizations and awareness of my values, beliefs, and goals in life, not only that, but I also know what my strengths, weaknesses, and emotions were when I struggled with them before. Understanding myself is the first step toward understanding others and building a better future for myself.
+</div>
+      </div>
+    </section>
+
+    <!-- IV. SMART Goal -->
+    <section id="smart-goal" class="card">
+      <div class="section-header"><div class="section-number">IV</div><span>SMART Goal Reflection</span></div>
+      <div class="prose">
+           <p style="color: #8a7668; margin-bottom: 24px;">At the start of this semester, I set a SMART goal to guide my personal growth.</p>
+        <div class="callout">For my SMART goal, I focused on improving myself academically and personally. My goal was to become more disciplined in managing my time and completing my school tasks earlier instead of procrastinating. I wanted to improve my productivity and reduce the stress that comes from rushing requirements at the last minute. Although I was not able to achieve my goal perfectly, I can say that I made progress. There were still moments when I procrastinated or became distracted, but I also learned how important consistency and self-discipline are. I realized that achieving goals is not always about immediate success. Sometimes, the process itself teaches valuable lessons about patience, responsibility, and self-awareness.
+One thing I learned about myself is that I work better when I create a clear schedule and avoid distractions. I also learned that motivation alone is not enough; discipline is more important because it helps you continue even when you do not feel motivated. Next time, I can improve by managing my time more effectively, setting smaller, realistic tasks, and developing healthier habits.This experience taught me that growth does not happen overnight. Every small improvement matters, and every mistake can become an opportunity to learn and become better.
+</div>
+      </div>
+    </section>
+
+    <!-- V. Submissions (Popup Triggers) -->
+    <section id="submissions" class="card">
+      <div class="section-header"><div class="section-number">V</div><span>Post-Assessment Submissions</span></div>
+      <p style="color: #8a7668; margin-bottom: 24px;">Click each section below to view the submission in a popup</p>
+
+      <button class="popup-trigger" onclick="openModal('modal-v')"> <span><strong>I.</strong> Eastern and Western Self</span> <i data-lucide="maximize-2" style="width:18px"></i></button>
+      <button class="popup-trigger" onclick="openModal('modal-vi')"> <span><strong>II.</strong> Philosophical and Psychological Self</span> <i data-lucide="maximize-2" style="width:18px"></i></button>
+      <button class="popup-trigger" onclick="openModal('modal-vii')"> <span><strong>III.</strong> Anthropological and Sociological Self</span> <i data-lucide="maximize-2" style="width:18px"></i></button>
+      <button class="popup-trigger" onclick="openModal('modal-viii')"> <span><strong>IV.</strong> Physical and Sexual Self</span> <i data-lucide="maximize-2" style="width:18px"></i></button>
+      <button class="popup-trigger" onclick="openModal('modal-ix')"> <span><strong>V.</strong> Material and Digital Self</span> <i data-lucide="maximize-2" style="width:18px"></i></button>
+      <button class="popup-trigger" onclick="openModal('modal-x')"> <span><strong>VI.</strong> Spiritual and Political Self</span> <i data-lucide="maximize-2" style="width:18px"></i></button>
+    </section>
+
+    <!-- XI. Parting Words -->
+    <section id="parting-words" class="card">
+      <div class="section-header"><div class="section-number">VI</div><span>Parting Words</span></div>
+      <div class="prose">
+        <p style="color: #8a7668; margin-bottom: 24px;">To end my journey of self-discovery, here is my final reflection:</p>
+        <div class="callout"><strong>Dear Future Me,</strong><br>This subject has been a meaningful and eye-opening experience for me. This course helped me understand that the self is not fixed and that it continuously changes and develops through experiences, relationships, and self-reflection. One of the biggest realizations I gained is that self-awareness is important for personal growth. By understanding myself deeper from personal beliefs and values to what I like and dislike, I can make better decisions and become a better person. I also learned to appreciate the uniqueness of every individual and respect different perspectives and experiences.
+This subject taught me that growth takes time. There will always be challenges, mistakes, and uncertainties, but these experiences help shape who we become. I learned the importance of balance, balancing individuality and relationships, dreams and responsibilities, confidence and humility.
+I promise to continue growing, learning, and improving. I promise to stay true to my values, take care of my mental and physical health, and never stop believing in my potential. I want my future self to look back proudly and say that every struggle and lesson became part of the person I was meant to become.
+</div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <p>Understanding the Self | Final Requirement </p>
+    </div>
+  </div>
+
+  <!-- POPUP MODALS -->
+  <div id="modal-v" class="modal-overlay" onclick="closeModal(event, 'modal-v')">
+    <div class="modal-content">
+      <button class="close-modal-btn" onclick="hideModal('modal-v')">Close</button>
+      <h3 class="section-header">Eastern and Western Self</h3>
+      <div class="prose">
+        <p>My identity is a blend of two cultures. My Eastern side shows in my collectivism, I chose my career path in Information Technology not just for myself, but to help lift the financial burden from my family. My Western side is reflected in my desire for personal competence and independence in my studies. Moving from Bataan to a new environment taught me cultural empathy; I’ve learned to adjust my approach to work harmoniously in groups and to value inclusive communication where everyone has an equal voice.</p>
+        <img src="6.png" class="mt-4 rounded-lg w-full shadow-md">
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-vi" class="modal-overlay" onclick="closeModal(event, 'modal-vi')">
+    <div class="modal-content">
+      <button class="close-modal-btn" onclick="hideModal('modal-vi')">Close</button>
+      <h3 class="section-header">Philosophical and Psychological Self</h3>
+      <div class="prose">
+        <p>My philosophy aligns with Socrates’ "Know Thyself." A defining moment for me was in 12th grade when I chose to rely on my own ethics rather than using AI for my thesis. I realized that doing the work myself is much more satisfying because it builds self-respect and responsibility. While my "real self" is often vulnerable and keeps walls up, I strive toward my "ideal self" by taking on challenges, such as leading group projects even when I feel unprepared. I want my future 30-year-old self to remember that staying genuine is more important than any achievement.</p>
+        <img src="4.png" class="mt-4 rounded-lg w-full shadow-md">
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-vii" class="modal-overlay" onclick="closeModal(event, 'modal-vii')">
+    <div class="modal-content">
+      <button class="close-modal-btn" onclick="hideModal('modal-vii')">Close</button>
+      <h3 class="section-header">Anthropological and Sociological Self</h3>
+      <div class="prose">
+        <p>My identity has been shaped significantly by my family’s discipline and my friends’ acceptance. I’ve noticed a pattern in how I am perceived: strangers often see me as reserved or intimidating, but my friends know me as easygoing, dedicated, and a voice of reason. These external perspectives help me recognize strengths in myself that I often overlook. I aim to be recognized as someone respectful and reliable, someone who is thoughtful enough to help those in need.</p>
+        <img src="5.png" class="mt-4 rounded-lg w-full shadow-md">
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-viii" class="modal-overlay" onclick="closeModal(event, 'modal-viii')">
+    <div class="modal-content">
+      <button class="close-modal-btn" onclick="hideModal('modal-viii')">Close</button>
+      <h3 class="section-header">Physical and Sexual Self</h3>
+      <div class="prose">
+        <p>I view my physical self as a vital part of my identity. I commit to self-care, proper hygiene, and rest, not for vanity, but to practice self-respect and resist unrealistic beauty standards. I believe in treating everyone equally regardless of who they are, and I stand firmly against body shaming and gender-based violence. To me, promoting human dignity means being polite and fair to everyone, including those from different cultures.</p>
+        <img src="1.jpg" class="mt-4 rounded-lg w-full shadow-md">
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-ix" class="modal-overlay" onclick="closeModal(event, 'modal-ix')">
+    <div class="modal-content">
+      <button class="close-modal-btn" onclick="hideModal('modal-ix')">Close</button>
+      <h3 class="section-header">Material and Digital Self</h3>
+      <div class="prose">
+        <p>If I had to choose one object to represent me, it would be a pencil; it is a powerful tool that allows me to express my creativity and communicate emotions when my voice cannot. Digitally, I am very selective and reserved. After struggling with online comparisons during the pandemic, I decided to step back from seeking validation. Now, I keep my accounts private and use them to highlight the best version of my art while maintaining firm boundaries to keep my identity safe and balanced.</p>
+        <img src="2.jpg" class="mt-4 rounded-lg w-full shadow-md">
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-x" class="modal-overlay" onclick="closeModal(event, 'modal-x')">
+    <div class="modal-content">
+      <button class="close-modal-btn" onclick="hideModal('modal-x')">Close</button>
+      <h3 class="section-header">Spiritual and Political Self</h3>
+      <div class="prose">
+        <p>My spiritual self seeks meaning and peace through faith, which helps me stay hopeful during difficult times and encourages me to communicate calmly rather than cutting people off. Politically, I have evolved from being apathetic to being socially aware and open-minded. I believe that leaders should serve responsibly and that as citizens, we have a duty to vote wisely. I understand now that politics affects my everyday life, and I am committed to the fair treatment of everyone in society.</p>
+        <img src="3.jpg" class="mt-4 rounded-lg w-full shadow-md">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hideModal(id) {
+      document.getElementById(id).style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    function closeModal(event, id) {
+      if (event.target.classList.contains('modal-overlay')) {
+        hideModal(id);
+      }
+    }
+
+    function scrollToSection(id) {
+      const element = document.getElementById(id);
+      if (element) { element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    }
+
+    // Element SDK Config
+    const defaultConfig = {
+      portfolio_title: 'Understanding the Self',
+      student_name: 'Rica Loraine B. Tuvillara',
+      intro_subtitle: 'A Journey of Self-Discovery'
+    };
+
+    async function onConfigChange(config) {
+      document.getElementById('portfolio-title').textContent = config.portfolio_title || defaultConfig.portfolio_title;
+      document.getElementById('author-name').textContent = config.student_name || defaultConfig.student_name;
+      document.getElementById('subtitle').textContent = config.intro_subtitle || defaultConfig.intro_subtitle;
+    }
+
+    window.elementSdk.init({
+      defaultConfig,
+      onConfigChange,
+      mapToCapabilities: () => ({ recolorables: [], borderables: [] }),
+      mapToEditPanelValues: (config) => new Map([
+        ['portfolio_title', config.portfolio_title || defaultConfig.portfolio_title],
+        ['student_name', config.student_name || defaultConfig.student_name],
+        ['intro_subtitle', config.intro_subtitle || defaultConfig.intro_subtitle]
+      ])
+    });
+
+    lucide.createIcons();
+  </script>
+</body>
+</html>
